@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the code from GitHub
-                git url: 'https://github.com/Mustafaml786/React-E-commerce-CI-CD.git', branch: 'main'
+                git url: 'https://github.com/Mustafaml786/React-E-commerce-CI-CD.git', branch: 'master'
             }
         }
 
