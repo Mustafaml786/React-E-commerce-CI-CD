@@ -19,7 +19,11 @@ pipeline {
             steps {
                 // Install dependencies using npm
                 script {
-                    sh 'npm install'
+                    if (isUnix()) {
+                        sh 'npm install'
+                    } else {
+                        bat 'npm install'
+                    }
                 }
             }
         }
@@ -28,7 +32,11 @@ pipeline {
             steps {
                 // Build the React application
                 script {
-                    sh 'npm run build'
+                    if (isUnix()) {
+                        sh 'npm run build'
+                    } else {
+                        bat 'npm run build'
+                    }
                 }
             }
         }
@@ -37,7 +45,11 @@ pipeline {
             steps {
                 // Run tests (if you have any)
                 script {
-                    sh 'npm test'
+                    if (isUnix()) {
+                        sh 'npm test'
+                    } else {
+                        bat 'npm test'
+                    }
                 }
             }
         }
@@ -46,7 +58,11 @@ pipeline {
             steps {
                 // Build the Docker image
                 script {
-                    sh "docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ."
+                    if (isUnix()) {
+                        sh "docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ."
+                    } else {
+                        bat "docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ."
+                    }
                 }
             }
         }
@@ -56,8 +72,13 @@ pipeline {
                 // Push the Docker image to Docker Hub
                 script {
                     withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                        sh "docker push ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                        if (isUnix()) {
+                            sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                            sh "docker push ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                        } else {
+                            bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin"
+                            bat "docker push ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                        }
                     }
                 }
             }
@@ -68,7 +89,7 @@ pipeline {
                 // Deploy the application (example placeholder)
                 echo 'Deploying the application...'
                 // Add actual deployment logic, for example, Kubernetes or Docker Compose
-                // e.g., sh 'kubectl apply -f deployment.yml' or docker-compose up
+                // e.g., bat 'kubectl apply -f deployment.yml' or docker-compose up
             }
         }
     }
